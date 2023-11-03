@@ -14,8 +14,8 @@ import { AuthenticationContext } from '../../../services/authentication/authenti
 import { Text } from '../../../components/typography/text.component';
 
 export const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('daniel@email.com');
+  const [password, setPassword] = useState('test123');
 
   const { onLogin, error, isLoading } = useContext(AuthenticationContext);
 
