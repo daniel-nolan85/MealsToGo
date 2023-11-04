@@ -1,10 +1,13 @@
-import { useContext } from 'react';
+import { useState, useContext } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
 import { List, Avatar } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { SafeArea } from '../../../components/utils/safe-area.component';
 import { AuthenticationContext } from '../../../services/authentication/authentication.context';
 import { Text } from '../../../components/typography/text.component';
 import { Spacer } from '../../../components/spacer/spacer.component';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsItem = styled(List.Item)`
   padding: ${(props) => props.theme.space[3]};
@@ -15,11 +18,29 @@ const AvatarContainer = styled.View`
 `;
 
 export const SettingsScreen = ({ navigation }) => {
+  const [photo, setPhoto] = useState(null);
+
   const { onLogout, user } = useContext(AuthenticationContext);
+
+  useFocusEffect(() => {
+    getProfilePicture(user);
+  }, [user]);
+
+  const getProfilePicture = async (currentUser) => {
+    const photoUri = await AsyncStorage.getItem(`${currentUser.uid}-photo`);
+    setPhoto(photoUri);
+  };
+
   return (
     <SafeArea>
       <AvatarContainer>
-        <Avatar.Icon size={180} icon='human' backgroundColor='#2182bd' />
+        <TouchableOpacity onPress={() => navigation.navigate('Camera')}>
+          {!photo ? (
+            <Avatar.Icon size={180} icon='human' backgroundColor='#2182bd' />
+          ) : (
+            <Avatar.Image size={180} source={{ uri: photo }} />
+          )}
+        </TouchableOpacity>
         <Spacer position='top' size='large' />
         <Text variant='caption'>{user.email}</Text>
       </AvatarContainer>
